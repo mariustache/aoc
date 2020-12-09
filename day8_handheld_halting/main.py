@@ -7,20 +7,23 @@ def run(instructions):
     global accumulator
     index_list = list()
     index = 0
+    accumulator = 0
     while True:
+
         if index >= len(instructions):
             print("Program terminates.")
             print(f"Accumulator value: {accumulator}")
             return True
+
         if index in index_list:
             print("Instructions are entering an infinite loop. Stop.")
-            print(f"Stop index: {index}.")
+            print(f"Stop index: {index}. Current instruction: {instructions[index]}")
             print(f"Accumulator value: {accumulator}")
             return False
 
         instruction = instructions[index]
         index_list.append(index)
-        print(f"Running instruction at index {index}: {' '.join(instruction)}")
+        #print(f"Running instruction at index {index}: {' '.join(instruction)}")
         if instruction[0] == "nop":
             index += 1
             continue
@@ -40,30 +43,21 @@ def update_value(target, instruction):
     return target
 
 def fix_program(instructions):
-    global accumulator
-    is_fixed = False
     for idx, instruction in enumerate(instructions):
-        accumulator = 0
-        if instruction[0] == "jmp":
-            is_fixed = run_with_changed_instruction(instructions, "nop", idx)
-        elif instruction[0] == "nop":
-            is_fixed = run_with_changed_instruction(instructions, "jmp", idx)
+        current_instruction = instruction[0]
+        if current_instruction == "jmp":
+            instructions[idx][0] = "nop"
+        elif current_instruction == "nop":
+            instructions[idx][0] = "jmp"
+        else:
+            continue
 
-        if is_fixed:
+        print(f"Found {current_instruction} at index {idx}. Changing instruction and running program.")
+        if run(instructions):
             break
-
-def run_with_changed_instruction(instructions, changed_instruction, idx):
-    changed_instructions = instructions.copy()
-    changed_instructions[idx][0] = changed_instruction
-    print(f"Run program with changed instruction at index {idx} with {changed_instruction}.")
-    is_fixed = run(changed_instructions)
-    if is_fixed:
-        print("Program is fixed.")
-        return True
-    else:
-        print("Not the right solution.")
-        return False
-
+        else:
+            instructions[idx][0] = current_instruction
+            
 
 if __name__ == "__main__":
 
