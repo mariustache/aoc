@@ -33,7 +33,7 @@ def find_encryption_weakness(invalid_number, numbers):
         # If the end of the list is reached, 
         # increment the window length and reset index to 0.
         window_end = index + window_length
-        if index + window_length > len(numbers):
+        if window_end > len(numbers):
             window_length += 1
             index = 0
         contiguous_numbers = numbers[index:index+window_length]
