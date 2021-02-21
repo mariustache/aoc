@@ -62,9 +62,9 @@ def scan(tickets, rules):
 
 def determine_fields(tickets, rules):
     length = len(tickets[0].data)
-    fields = dict()
+    fields = list()
     for idx in range(0, length):
-        fields[idx] = list()
+        rule_list = list()
         for rule in rules:
             all_valid = True
             for ticket in tickets:
@@ -73,7 +73,31 @@ def determine_fields(tickets, rules):
                     all_valid = False
                     break
             if all_valid:
-                fields[idx].append(rule.name)    
+                rule_list.append(rule.name)
+        fields.append([idx, rule_list])    
+
+    fields = sorted(fields, key=lambda x: len(x[-1]))
+    already_added = list()
+    index_list = list()
+    for field_list in fields:
+        for field in field_list[-1]:
+            if field not in already_added:
+                already_added.append(field)
+                index_list.append(field_list[0])
+    return zip(index_list, already_added)
+
+def departure_values(fields, ticket):
+    keyword = "departure"
+    index_list = list()
+    for field in fields:
+        if keyword in field[-1]:
+            index_list.append(field[0])
+    
+    product = 1
+    for index in index_list:
+        product *= ticket.data[index]
+    
+    return product
 
 def parse_rules(data):
     rules = list()
@@ -112,6 +136,8 @@ if __name__ == "__main__":
             tickets.append(ticket)
     
     error_rate, valid_tickets = scan(tickets, rules)
-    print(f"Part 1. Error rate: {error_rate}.")
+    print(f"Part 1. Error rate: {error_rate}")
     
-    determine_fields(valid_tickets, rules)
+    fields = determine_fields(valid_tickets, rules)
+    departure_value = departure_values(fields, my_ticket)
+    print(f"Part 2. Departure values multiplied: {departure_value}")
