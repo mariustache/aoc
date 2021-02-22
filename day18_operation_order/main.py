@@ -28,7 +28,7 @@ def evaluate(expression):
             print(f"{group} = {value}")
             expression = expression.replace("(" + group + ")", str(value))
         parantheses = re.search(REGEX, expression)
-    
+    value = compute(expression)
     return int(value)
 
 if __name__ == "__main__":
