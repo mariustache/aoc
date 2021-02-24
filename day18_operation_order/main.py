@@ -7,7 +7,8 @@ NUMBERS = r"([0-9]+)"
 OPERATION = r"([+*])"
 ADD = "+"
 MUL = "*"
-ADDITION = r"((?:[0-9]+)\+(?:[0-9]+))"
+#ADDITION = r"((?:[0-9]+)\+(?:[0-9]+))" wrong regex
+ADDITION = r"(?:[0-9]+)(?:\+[0-9]+)+"
 PARANTHESES = r"\(([^()]*)\)"
 
 def compute(expression):
@@ -38,7 +39,8 @@ def evaluate(expression, compute_function):
             value = compute_function(group)
             expression = expression.replace("(" + group + ")", str(value))
         parantheses = re.findall(PARANTHESES, expression)
-    return compute_function(expression)
+    value = compute_function(expression)
+    return value
 
 if __name__ == "__main__":
 
