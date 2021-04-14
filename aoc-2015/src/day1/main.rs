@@ -22,13 +22,18 @@ fn determine_floor(instructions: &String) -> (i32, usize) {
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-
-    let instructions: String = fs::read_to_string(&args[1])
-        .expect("Error reading input file.");
-
-    let (floor_number, first_index) = determine_floor(&instructions);
-    println!("[Part 1] answer is: {}", floor_number);
-    println!("[Part 2] answer is: {}", first_index);
+    
+    match args.len() {
+        1 => println!("Please provide input file."),
+        2 => {
+            let instructions: String = fs::read_to_string(&args[1]).
+                expect("Error reading input file.");
+            let (floor_number, first_index) = determine_floor(&instructions);
+            println!("[Part 1] answer is: {}", floor_number);
+            println!("[Part 2] answer is: {}", first_index);
+        },
+        _ => println!("Too many arguments!"),
+    }
 }
 
 #[test]
