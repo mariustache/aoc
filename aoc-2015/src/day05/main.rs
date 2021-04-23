@@ -1,6 +1,5 @@
 use std::env;
 use std::fs;
-use regex::Regex;
 
 use utils::solution;
 
@@ -17,15 +16,29 @@ fn pair_check(string: &String) -> String {
 }
 
 fn appearence_check(string: &String) -> String {
-    let re = Regex::new(r"([a-z])\1").unwrap();
-    if re.is_match(string) {
-        return String::from("nice")
+    let mut current_char = string.chars().nth(0).expect("Empty string.");
+    for _char in string.chars().skip(1) {
+        if current_char == _char {
+            return String::from("nice")
+        }
+        else {
+            current_char = _char;
+        }
     }
     String::from("naughty")
 }
 
 fn vowel_check(string: &String) -> String {
-
+    let vowels: String = String::from("aeiou");
+    let mut vowels_number = 3;
+    for _char in string.chars() {
+        if vowels.contains(_char) {
+            vowels_number -= 1;
+        }
+    }
+    if vowels_number > 0 {
+        return String::from("naughty")
+    }
     String::from("nice")
 }
 
@@ -63,4 +76,30 @@ fn main() {
         2 => solve(&args[1]),
         _ => println!("Too many arguments!"),
     }
+}
+
+#[test]
+fn test_vowels() {
+    let mut value = String::from("aaa");
+    assert_eq!(vowel_check(&value), "nice");
+    value = String::from("aab");
+    assert_eq!(vowel_check(&value), "naughty");
+}
+
+#[test]
+fn test_appearence() {
+    let mut value = String::from("jchzalrnumimnmhp");
+    assert_eq!(appearence_check(&value), "naughty");
+    value = String::from("jchzalrnumimnmhpp");
+    assert_eq!(appearence_check(&value), "nice");
+
+}
+
+#[test]
+fn test_pair() {
+    let mut value = String::from("haegwjzuvuyypxyu");
+    assert_eq!(pair_check(&value), "naughty");
+    value = String::from("haegwjzuvuyypxxu");
+    assert_eq!(pair_check(&value), "nice");
+
 }
