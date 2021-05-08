@@ -3,6 +3,8 @@ use std::fs;
 
 use utils::solution;
 
+type FunctionVector = Vec<fn(&String) -> String>;
+
 fn pair_check(string: &String) -> String {
     let pairs: Vec<&str> = vec!["ab", "cd", "pq", "xy"];
     for pair in pairs {
@@ -42,9 +44,8 @@ fn vowel_check(string: &String) -> String {
     String::from("nice")
 }
 
-fn string_type(string: &String) -> String {
-    let check_functions: Vec<fn(&String) -> String> = vec![pair_check, appearence_check, vowel_check];
-    for check_function in check_functions {
+fn string_type(string: &String, functions: &FunctionVector) -> String {
+    for check_function in functions {
         if check_function(&string) == "naughty" {
             return String::from("naughty")
         }
@@ -53,19 +54,54 @@ fn string_type(string: &String) -> String {
     String::from("nice")
 }
 
+fn pair_check2(string: &String) -> String {
+    let mut pair: &str = &string[..2];
+    let mut index = 1;
+    let max_index = (string.chars().count() - 1) - 1;
+    while index != max_index {
+        if string[index+1..].contains(pair) {
+            return String::from("nice")
+        } else {
+            pair = &string[index..index+2];
+            index += 1;
+        }
+    }
+    String::from("naughty")
+}
+
+fn appearence_check2(string: &String) -> String {
+    let mut letter: &str = &string[..1];
+    let mut index = 1;
+    let max_index = string.chars().count() - 1;
+    while index != max_index {
+        if letter == &string[index+1..index+2] {
+            return String::from("nice")
+        } else {
+            letter = &string[index..index+1];
+            index += 1;
+        }
+    }
+
+    String::from("naughty")
+}
+
 fn solve(data: &String) {
     let data: String = fs::read_to_string(&data).
         expect("Error reading input file!");
-    let mut nice_strings = 0;
+    let mut nice_strings_1 = 0;
+    let mut nice_strings_2 = 0;
+    let check_functions_1: FunctionVector = vec![pair_check, appearence_check, vowel_check];
+    let check_functions_2: FunctionVector = vec![pair_check2, appearence_check2];
     for string in data.split("\n") {
-        if string_type(&string.to_string()) == "nice" {
-            nice_strings += 1;
+        if string_type(&string.to_string(), &check_functions_1) == "nice" {
+            nice_strings_1 += 1;
+        }
+        if string_type(&string.to_string(), &check_functions_2) == "nice" {
+            nice_strings_2 += 1;
         }
     }
-    solution!("1", nice_strings);
-
-    //let solution: u32 = find_hash(&secret_key, NONCE6);
-    //solution!("2", solution);
+    solution!("1", nice_strings_1);
+    solution!("2", nice_strings_2);
 }
 
 fn main() {
@@ -92,7 +128,6 @@ fn test_appearence() {
     assert_eq!(appearence_check(&value), "naughty");
     value = String::from("jchzalrnumimnmhpp");
     assert_eq!(appearence_check(&value), "nice");
-
 }
 
 #[test]
@@ -101,5 +136,26 @@ fn test_pair() {
     assert_eq!(pair_check(&value), "naughty");
     value = String::from("haegwjzuvuyypxxu");
     assert_eq!(pair_check(&value), "nice");
+}
 
+#[test]
+fn test_part2() {
+    let mut value = String::from("qjhvhtzxzqqjkmpb");
+    assert_eq!(pair_check2(&value), "nice");
+    assert_eq!(appearence_check2(&value), "nice");
+    //*
+    value = String::from("xxyxx");
+    assert_eq!(pair_check2(&value), "nice");
+    assert_eq!(appearence_check2(&value), "nice");
+    //*/
+    //*
+    value = String::from("uurcxstgmygtbstg");
+    assert_eq!(pair_check2(&value), "nice");
+    assert_eq!(appearence_check2(&value), "naughty");
+    //*/
+    //*
+    value = String::from("ieodomkazucvgmuy");
+    assert_eq!(pair_check2(&value), "naughty");
+    assert_eq!(appearence_check2(&value), "nice");
+    //*/
 }
